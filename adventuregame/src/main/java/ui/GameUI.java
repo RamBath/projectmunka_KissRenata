@@ -30,7 +30,7 @@ public class GameUI {
 
     private void initialize() {
         frame = new JFrame();
-        frame.setBounds(100, 100, 1000, 1400);
+        frame.setBounds(100, 100, 400, 450);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         cardLayout = new CardLayout();
@@ -221,6 +221,15 @@ public class GameUI {
             }
         });
         trainingPanel.add(levelButton);
+        
+        JButton backToMainButton4 = new JButton("Main");
+        backToMainButton4.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                showMainScreen();
+            }
+        });
+        trainingPanel.add(backToMainButton4);
+
 
         // Map panel setup
         mapPanel = new JPanel(new BorderLayout());
@@ -258,6 +267,7 @@ public class GameUI {
         frame.getContentPane().removeAll();
         frame.getContentPane().add(mapPanel, BorderLayout.CENTER);
         mapPanel.setVisible(true); // Ensure the map panel is focused
+        mapScreen.show(); // Show the map
         frame.revalidate();
         frame.repaint();
     }
