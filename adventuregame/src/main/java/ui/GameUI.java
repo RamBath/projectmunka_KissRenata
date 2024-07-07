@@ -1,9 +1,10 @@
 package ui;
 
+import javax.swing.*;
+
 import logics.*;
 import repository.*;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -17,8 +18,10 @@ public class GameUI {
     private JPanel mainPanel;
     private JPanel shopPanel;
     private JPanel trainingPanel;
+    private JPanel mapPanel;
     private CardLayout cardLayout;
     private int inventoryIndex = 0;
+    private Map mapScreen;
 
     public GameUI() {
         gameLogic = new GameLogic();
@@ -27,9 +30,9 @@ public class GameUI {
 
     private void initialize() {
         frame = new JFrame();
-        frame.setBounds(100, 100, 450, 300);
+        frame.setBounds(100, 100, 1000, 1400);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
+
         cardLayout = new CardLayout();
         frame.getContentPane().setLayout(cardLayout);
 
@@ -53,7 +56,7 @@ public class GameUI {
         // Main panel setup
         mainPanel = new JPanel();
         frame.getContentPane().add(mainPanel, "MainPanel");
-        mainPanel.setLayout(new GridLayout(3, 1, 0, 0));
+        mainPanel.setLayout(new GridLayout(4, 1, 0, 0));
 
         JButton shopButton = new JButton("Shop");
         shopButton.addActionListener(new ActionListener() {
@@ -72,7 +75,11 @@ public class GameUI {
         mainPanel.add(trainingButton);
 
         JButton mapButton = new JButton("Map");
-        // Define map action later
+        mapButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                showMapScreen();
+            }
+        });
         mainPanel.add(mapButton);
 
         // Shop panel setup
@@ -87,42 +94,16 @@ public class GameUI {
         tabbedPane.addTab("Buy", null, buyPanel, null);
         buyPanel.setLayout(new BorderLayout(0, 0));
 
-        itemDescription = new JTextArea();
-        itemDescription.setEditable(false);
-        buyPanel.add(itemDescription, BorderLayout.CENTER);
-
         JPanel buyButtonPanel = new JPanel();
         buyPanel.add(buyButtonPanel, BorderLayout.SOUTH);
 
         JButton buyButton = new JButton("Buy");
-        buyButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                Item currentItem = gameLogic.getItemRepository().getCurrentItem();
-                if (gameLogic.buyItem(currentItem)) {
-                    JOptionPane.showMessageDialog(frame, "Item bought!");
-                } else {
-                    JOptionPane.showMessageDialog(frame, "Not enough gold!");
-                }
-            }
-        });
         buyButtonPanel.add(buyButton);
 
         JButton nextButton = new JButton("Next Item");
-        nextButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                Item nextItem = gameLogic.getItemRepository().getNextItem();
-                itemDescription.setText(nextItem.getDescription());
-            }
-        });
         buyButtonPanel.add(nextButton);
 
         JButton previousButton = new JButton("Previous Item");
-        previousButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                Item previousItem = gameLogic.getItemRepository().getPreviousItem();
-                itemDescription.setText(previousItem.getDescription());
-            }
-        });
         buyButtonPanel.add(previousButton);
 
         JButton backToMainButton = new JButton("Main");
@@ -133,11 +114,14 @@ public class GameUI {
         });
         buyButtonPanel.add(backToMainButton);
 
+        itemDescription = new JTextArea();
+        buyPanel.add(itemDescription, BorderLayout.CENTER);
+
         JPanel sellPanel = new JPanel();
         tabbedPane.addTab("Sell", null, sellPanel, null);
         sellPanel.setLayout(new BorderLayout(0, 0));
 
-        inventoryList = new JList<>(gameLogic.getCharacter().getInventory().toArray(new Item[0]));
+        inventoryList = new JList<>();
         sellPanel.add(new JScrollPane(inventoryList), BorderLayout.CENTER);
 
         JPanel sellButtonPanel = new JPanel();
@@ -238,13 +222,22 @@ public class GameUI {
         });
         trainingPanel.add(levelButton);
 
-        JButton backToMainFromTrainingButton = new JButton("Main");
-        backToMainFromTrainingButton.addActionListener(new ActionListener() {
+        // Map panel setup
+        mapPanel = new JPanel(new BorderLayout());
+        JTextArea mapInfoPanel = new JTextArea();
+        mapInfoPanel.setEditable(false);
+        mapPanel.add(mapInfoPanel, BorderLayout.NORTH);
+        frame.getContentPane().add(mapPanel, "MapPanel");
+
+        mapScreen = new Map(mapPanel, mapInfoPanel);
+
+        JButton homeButton = new JButton("Home");
+        homeButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 showMainScreen();
             }
         });
-        trainingPanel.add(backToMainFromTrainingButton);
+        mapPanel.add(homeButton, BorderLayout.SOUTH);
 
         frame.setVisible(true);
     }
@@ -259,5 +252,25 @@ public class GameUI {
 
     private void showTrainingScreen() {
         cardLayout.show(frame.getContentPane(), "TrainingPanel");
+    }
+
+    private void showMapScreen() {
+        frame.getContentPane().removeAll();
+        frame.getContentPane().add(mapPanel, BorderLayout.CENTER);
+        mapPanel.setVisible(true); // Ensure the map panel is focused
+        frame.revalidate();
+        frame.repaint();
+    }
+
+    public static void main(String[] args) {
+        EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                try {
+                    GameUI window = new GameUI();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 }

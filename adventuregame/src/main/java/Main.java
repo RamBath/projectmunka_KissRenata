@@ -1,5 +1,3 @@
-package main;
-
 import ui.GameUI;
 
 public class Main {
@@ -15,3 +13,5 @@ public class Main {
         });
     }
 }
+
+
