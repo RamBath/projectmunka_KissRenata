@@ -1,10 +1,8 @@
 package ui;
 
 import javax.swing.*;
-
 import logics.*;
 import repository.*;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -230,23 +228,26 @@ public class GameUI {
         });
         trainingPanel.add(backToMainButton4);
 
-
         // Map panel setup
         mapPanel = new JPanel(new BorderLayout());
-        JTextArea mapInfoPanel = new JTextArea();
-        mapInfoPanel.setEditable(false);
-        mapPanel.add(mapInfoPanel, BorderLayout.NORTH);
         frame.getContentPane().add(mapPanel, "MapPanel");
 
-        mapScreen = new Map(mapPanel, mapInfoPanel);
-
-        JButton homeButton = new JButton("Home");
+        JPanel mapControlPanel = new JPanel(new BorderLayout());
+        JTextArea infoPanel = new JTextArea();
+        infoPanel.setEditable(false);
+        JButton homeButton = new JButton("Back");
         homeButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 showMainScreen();
             }
         });
-        mapPanel.add(homeButton, BorderLayout.SOUTH);
+
+        mapControlPanel.add(infoPanel, BorderLayout.CENTER);
+        mapControlPanel.add(homeButton, BorderLayout.SOUTH);
+
+        mapPanel.add(mapControlPanel, BorderLayout.SOUTH);
+
+        mapScreen = new Map(mapPanel, infoPanel);
 
         frame.setVisible(true);
     }
@@ -264,9 +265,7 @@ public class GameUI {
     }
 
     private void showMapScreen() {
-        frame.getContentPane().removeAll();
-        frame.getContentPane().add(mapPanel, BorderLayout.CENTER);
-        mapPanel.setVisible(true); // Ensure the map panel is focused
+        cardLayout.show(frame.getContentPane(), "MapPanel");
         mapScreen.show(); // Show the map
         frame.revalidate();
         frame.repaint();

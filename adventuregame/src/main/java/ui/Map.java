@@ -11,57 +11,61 @@ import java.awt.event.KeyEvent;
 public class Map {
     private static final int TILE_SIZE = 70;
     private static final int MAP_SIZE = 5;
-    private JPanel parentPanel;
+    private JPanel mapContainer;
     private JTextArea infoPanel;
     private JLabel[][] tiles;
     private String[][] mapData;
     private int playerX, playerY;
 
     public Map(JPanel parentPanel, JTextArea infoPanel) {
-        this.parentPanel = parentPanel;
+        this.mapContainer = new JPanel(new GridLayout(MAP_SIZE, MAP_SIZE));
         this.infoPanel = infoPanel;
         this.tiles = new JLabel[MAP_SIZE][MAP_SIZE];
         this.mapData = MapLogic.generateInitialMap();
         this.playerX = MAP_SIZE / 2;
         this.playerY = MAP_SIZE / 2;
+
+        parentPanel.setLayout(new BorderLayout());
+        parentPanel.add(mapContainer, BorderLayout.CENTER);
+
         initializeMapPanel();
         updateMapDisplay();
     }
 
     private void initializeMapPanel() {
-        parentPanel.setLayout(new GridLayout(MAP_SIZE, MAP_SIZE));
         for (int i = 0; i < MAP_SIZE; i++) {
             for (int j = 0; j < MAP_SIZE; j++) {
                 tiles[i][j] = new JLabel();
                 tiles[i][j].setPreferredSize(new Dimension(TILE_SIZE, TILE_SIZE));
                 tiles[i][j].setOpaque(true);
                 tiles[i][j].setHorizontalAlignment(SwingConstants.CENTER);
-                parentPanel.add(tiles[i][j]);
+                mapContainer.add(tiles[i][j]);
             }
         }
 
-        parentPanel.addKeyListener(new KeyAdapter() {
+        mapContainer.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
                 switch (e.getKeyCode()) {
                     case KeyEvent.VK_LEFT:
-                        movePlayer(-1, 0);
+                        movePlayer(0, -1);  // Should map to moving up
                         break;
                     case KeyEvent.VK_RIGHT:
-                        movePlayer(1, 0);
+                        movePlayer(0, 1);   // Should map to moving down
                         break;
                     case KeyEvent.VK_UP:
-                        movePlayer(0, -1);
+                        movePlayer(-1, 0);  // Should map to moving left
                         break;
                     case KeyEvent.VK_DOWN:
-                        movePlayer(0, 1);
+                        movePlayer(1, 0);   // Should map to moving right
                         break;
                 }
             }
         });
+        
 
-        parentPanel.setFocusable(true);
-        parentPanel.requestFocusInWindow();
+        mapContainer.setFocusable(true);
+        mapContainer.requestFocusInWindow();
     }
 
     private void movePlayer(int dx, int dy) {
@@ -97,16 +101,18 @@ public class Map {
                     String tileCode = mapData[i][j].substring(6, 8);
                     TileType tileType = TileType.getByCode(tileCode);
                     if (tileType != null) {
-                        tiles[i][j].setIcon(new ImageIcon(getClass().getResource("/resources/" + tileType.getImage())));
+                        tiles[i][j].setIcon(new ImageIcon(getClass().getResource("/images/" + tileType.getImage())));
                     }
                 } else {
-                    tiles[i][j].setIcon(new ImageIcon(getClass().getResource("/resources/unknown.png")));
+                    tiles[i][j].setIcon(new ImageIcon(getClass().getResource("/images/unknown.png")));
                 }
             }
         }
         infoPanel.setText("Player position: (" + playerX + ", " + playerY + ")");
     }
+
     public void show() {
-        updateMapDisplay();
+        mapContainer.setVisible(true);
+        mapContainer.requestFocusInWindow();
     }
 }
