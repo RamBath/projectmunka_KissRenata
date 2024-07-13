@@ -51,7 +51,7 @@ public class MapLogic {
     }
 
     private static TileType getRandomMatchingTile(String[][] mapData, int x, int y) {
-        boolean[] constraints = getConstraints(mapData, x, y);
+        boolean[][] constraints = getConstraints(mapData, x, y);
         TileType selectedTile = null;
         boolean tileNotSelected= true;
         while (tileNotSelected){
@@ -60,10 +60,17 @@ public class MapLogic {
             TileType tile = TileType.getByCode(String.format("%02d", rand.nextInt(15) + 1));
 
             boolean[] directions = tile.getDirections();
-            if ((constraints[0] == directions[0] || !constraints[0]) &&
-                (constraints[1] == directions[1] || !constraints[1]) &&
-                (constraints[2] == directions[2] || !constraints[2]) &&
-                (constraints[3] == directions[3] || !constraints[3])) {
+            if (( //constrains
+                (constraints[0][0] == directions[0] || !constraints[0][0]) &&
+                (constraints[0][1] == directions[1] || !constraints[0][1]) &&
+                (constraints[0][2] == directions[2] || !constraints[0][2]) &&
+                (constraints[0][3] == directions[3] || !constraints[0][3]))  
+                &&
+                (//blocks
+                (constraints[1][0] != directions[0] || !constraints[1][0]) &&
+                (constraints[1][1] != directions[1] || !constraints[1][1]) &&
+                (constraints[1][2] != directions[2] || !constraints[1][2]) &&
+                (constraints[1][3] != directions[3] || !constraints[1][3]))){
 
                 selectedTile = tile;
                 tileNotSelected= false;
@@ -74,31 +81,58 @@ public class MapLogic {
         return selectedTile;
     }
 
-    private static boolean[] getConstraints(String[][] mapData, int x, int y) {
+    private static boolean[][] getConstraints(String[][] mapData, int x, int y) {
+        boolean [] [] pair= new boolean[2][4];
         boolean[] constraints = new boolean[]{false, false, false, false}; // Default: all directions allowed L, D, R, U
+        boolean[] blocks = new boolean[]{false, false, false, false};
+        if (x > 0 && mapData[x - 1][y] != null) { // top neighbor
+            String tileCode = mapData[x - 1][y].substring(6, 8);
+            TileType tile = TileType.getByCode(tileCode);
+            boolean[] directions = tile.getDirections();
+            if (directions[1]==true) {
+                constraints[3] = true ;            
+            } else blocks[3]=true;
+                       
+        }
+        if (y > 0 && mapData[x][y - 1] != null) { // left neighbor
+            String tileCode = mapData[x][y - 1] .substring(6, 8);
+            TileType tile = TileType.getByCode(tileCode);
+            boolean[] directions = tile.getDirections();
+            if (directions[2]==true) {
+                constraints[0] = true ;            
+            } else blocks[0]=true;
+        }
+        if (x < mapData.length - 1 && mapData[x + 1][y] != null) { // bottom neighbor
+            String tileCode = mapData[x + 1][y] .substring(6, 8);
+            TileType tile = TileType.getByCode(tileCode);
+            boolean[] directions = tile.getDirections();
+            if (directions[3]==true) {
+                constraints[1] = true ;            
+            } else blocks[1]=true;
+        }
+        if (y < mapData[0].length - 1 && mapData[x][y + 1] != null) { // right neighbor
+            String tileCode = mapData[x][y + 1] .substring(6, 8);
+            TileType tile = TileType.getByCode(tileCode);
+            boolean[] directions = tile.getDirections();
+            if (directions[0]==true) {
+                constraints[2] = true ;            
+            } else blocks[2]=true;
+        }
+        for (int i = 0; i < 4; i++) {
+            pair[0][i]=constraints[i];
+            pair[1][i]=blocks[i];
+        }
 
-        if (x > 0 && mapData[x - 1][y] != null) { // Left neighbor
-            constraints[2] = true ; // Must match right direction of left neighbor
-        }
-        if (y > 0 && mapData[x][y - 1] != null) { // Top neighbor
-            constraints[3] = true; // Must match bottom direction of top neighbor
-        }
-        if (x < mapData.length - 1 && mapData[x + 1][y] != null) { // Right neighbor
-            constraints[1] = true; // Must match left direction of right neighbor
-        }
-        if (y < mapData[0].length - 1 && mapData[x][y + 1] != null) { // Bottom neighbor
-            constraints[1] = true; // Must match top direction of bottom neighbor
-        }
+        return pair;
 
-        return constraints;
     }
 
     private static TileType generateSpecialTile(int chestProbability, int monsterProbability) {
         int chance = RANDOM.nextInt(100);
         if (chance < chestProbability) {
-            return TileType.TYPE_17; //CHEST
+            return TileType.TYPE_16; //CHEST
         } else if (chance < chestProbability + monsterProbability) {
-            return TileType.TYPE_16; //MONSTER
+            return TileType.TYPE_18; //MONSTER
         }
         return null; // No special tile
     }

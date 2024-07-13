@@ -18,24 +18,26 @@ public class Map {
     private int playerX, playerY;
 
     public Map(JPanel parentPanel, JTextArea infoPanel) {
-        this.mapContainer = new JPanel(new GridLayout(MAP_SIZE, MAP_SIZE));
+        this.mapContainer = new JPanel(new GridLayout(MAP_SIZE, MAP_SIZE,0, 0));
         this.infoPanel = infoPanel;
         this.tiles = new JLabel[MAP_SIZE][MAP_SIZE];
         this.mapData = MapLogic.generateInitialMap();
         this.playerX = MAP_SIZE / 2;
         this.playerY = MAP_SIZE / 2;
 
-        parentPanel.setLayout(new BorderLayout());
-        parentPanel.add(mapContainer, BorderLayout.CENTER);
+        //parentPanel.add(infoPanel, BorderLayout.SOUTH);
 
+        parentPanel.add(mapContainer, BorderLayout.CENTER);
+        parentPanel.add(infoPanel, BorderLayout.SOUTH);
         initializeMapPanel();
-        updateMapDisplay();
+        updateMapDisplay(mapData, playerX, playerY);
     }
 
     private void initializeMapPanel() {
         for (int i = 0; i < MAP_SIZE; i++) {
             for (int j = 0; j < MAP_SIZE; j++) {
                 tiles[i][j] = new JLabel();
+                tiles[i][j].setBorder(BorderFactory.createEmptyBorder()); 
                 tiles[i][j].setPreferredSize(new Dimension(TILE_SIZE, TILE_SIZE));
                 tiles[i][j].setOpaque(true);
                 tiles[i][j].setHorizontalAlignment(SwingConstants.CENTER);
@@ -64,6 +66,7 @@ public class Map {
         });
         
 
+
         mapContainer.setFocusable(true);
         mapContainer.requestFocusInWindow();
     }
@@ -75,7 +78,7 @@ public class Map {
             playerX = newX;
             playerY = newY;
             generateSurroundingTiles(playerX, playerY);
-            updateMapDisplay();
+            updateMapDisplay(mapData, playerX, playerY);
         }
     }
 
@@ -94,7 +97,7 @@ public class Map {
         }
     }
 
-    private void updateMapDisplay() {
+    public void updateMapDisplay(String[][] mapData, int playerX, int playerY) {
         for (int i = 0; i < MAP_SIZE; i++) {
             for (int j = 0; j < MAP_SIZE; j++) {
                 if (mapData[i][j] != null) {
