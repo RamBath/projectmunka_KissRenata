@@ -2,15 +2,17 @@ package logics;
 
 import java.util.Random;
 
+import repository.ItemRepository;
+
 public class MapLogic {
-    private static final int MAP_SIZE = 5;
+    private static final int MAP_SIZE = 100;
     private static final Random RANDOM = new Random();
 
     public static String[][] generateInitialMap() {
         String[][] mapData = new String[MAP_SIZE][MAP_SIZE];
         int centerX = MAP_SIZE / 2;
         int centerY = MAP_SIZE / 2;
-        mapData[centerX][centerY] = "00200201"; // Player starting tile
+        mapData[centerX][centerY] = "0500500100"; // Player starting tile
 
         for (int i = -1; i <= 1; i++) {
            
@@ -25,17 +27,18 @@ public class MapLogic {
     }
 
     public static String generateTileData(String[][] mapData, int x, int y) {
-        TileType specialTile = generateSpecialTile(10, 5); // 10% for chest, 5% for monster
+        String specialTile = generateSpecialTile(10, 5); // 10% for chest, 5% for monster
         if (specialTile != null) {
+            TileType newTile = getRandomMatchingTile(mapData, x, y);
             String coordX = String.format("%03d", x);
             String coordY = String.format("%03d", y);
-            return coordX + coordY + specialTile.getCode();
+            return coordX + coordY + newTile.getCode()+specialTile;
         }
 
         TileType newTile = getRandomMatchingTile(mapData, x, y);
         String coordX = String.format("%03d", x);
         String coordY = String.format("%03d", y);
-        return coordX + coordY + newTile.getCode();
+        return coordX + coordY + newTile.getCode()+"00";
     }
 
     public static void updateMap(String[][] mapData, int playerX, int playerY) {
@@ -49,6 +52,7 @@ public class MapLogic {
             }
         }
     }
+   
 
     private static TileType getRandomMatchingTile(String[][] mapData, int x, int y) {
         boolean[][] constraints = getConstraints(mapData, x, y);
@@ -127,13 +131,14 @@ public class MapLogic {
 
     }
 
-    private static TileType generateSpecialTile(int chestProbability, int monsterProbability) {
+    private static String generateSpecialTile(int chestProbability, int monsterProbability) {
         int chance = RANDOM.nextInt(100);
         if (chance < chestProbability) {
-            return TileType.TYPE_16; //CHEST
+            return "07"; //CHEST
         } else if (chance < chestProbability + monsterProbability) {
-            return TileType.TYPE_18; //MONSTER
+            return "01"; //MONSTER
         }
         return null; // No special tile
     }
+    
 }

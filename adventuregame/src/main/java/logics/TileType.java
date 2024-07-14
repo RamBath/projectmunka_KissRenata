@@ -15,14 +15,8 @@ public enum TileType {
     TYPE_12("12", new boolean[]{true, false, false, false}, "tile11.png"),// L
     TYPE_13("13", new boolean[]{false, true, false, false}, "tile12.png"),// D
     TYPE_14("14", new boolean[]{false, false, true, false}, "tile13.png"),// R
-    TYPE_15("15", new boolean[]{false, false, false, true}, "tile14.png"),// U
-    TYPE_16("16", new boolean[]{false, false, false, false}, "tile15.png"),// No movement (e.g., chest tile) #1
-    TYPE_17("17", new boolean[]{false, false, false, false}, "tile16.png"),// No movement (e.g., chest tile) #2
-    TYPE_18("18", new boolean[]{false, false, false, false}, "tile17.png"),// No movement (e.g., monster tile) #1
-    TYPE_19("19", new boolean[]{false, false, false, false}, "tile18.png"),// No movement (e.g., monster tile) #2
-    TYPE_20("20", new boolean[]{false, false, false, false}, "tile19.png"),// No movement (e.g., monster tile) #3
-    TYPE_21("21", new boolean[]{false, false, false, false}, "tile20.png"),// No movement (e.g., monster tile) #4
-    TYPE_22("22", new boolean[]{false, false, false, false}, "tile21.png");// No movement (e.g., monster tile) #5
+    TYPE_15("15", new boolean[]{false, false, false, true}, "tile14.png");// U
+
     
 
     private String code;

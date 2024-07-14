@@ -6,6 +6,11 @@ import repository.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class GameUI {
     private JFrame frame;
@@ -28,7 +33,7 @@ public class GameUI {
 
     private void initialize() {
         frame = new JFrame();
-        frame.setBounds(100, 100, 400, 450);
+        frame.setBounds(100, 100, 350, 400);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         cardLayout = new CardLayout();
@@ -242,17 +247,17 @@ public class GameUI {
             }
         });
 
-        mapControlPanel.add(infoPanel, BorderLayout.CENTER);
+        mapControlPanel.add(infoPanel, BorderLayout.NORTH);
         mapControlPanel.add(homeButton, BorderLayout.SOUTH);
 
         mapPanel.add(mapControlPanel, BorderLayout.SOUTH);
 
-        mapScreen = new Map(mapPanel, infoPanel);
+        mapScreen = new Map(mapPanel, infoPanel, homeButton);
 
         frame.setVisible(true);
     }
 
-    private void showMainScreen() {
+    void showMainScreen() {
         cardLayout.show(frame.getContentPane(), "MainPanel");
     }
 
@@ -282,4 +287,39 @@ public class GameUI {
             }
         });
     }
+
+    public void saveMapToFile(String[][] largeMap, String filePath) {
+    try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+        for (int i = 0; i < 100; i++) {
+            for (int j = 0; j < 100; j++) {
+                writer.write(largeMap[i][j] == null ? "00000000" : largeMap[i][j]);
+                if (j < 99) {
+                    writer.write(" ");
+                }
+            }
+            writer.newLine();
+        }
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+    }
+
+    public String[][] loadMapFromFile(String filePath) {
+    String[][] largeMap = new String[100][100];
+    try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+        String line;
+        int row = 0;
+        while ((line = reader.readLine()) != null && row < 100) {
+            String[] tokens = line.split(" ");
+            for (int col = 0; col < 100; col++) {
+                largeMap[row][col] = tokens[col].equals("00000000") ? null : tokens[col];
+            }
+            row++;
+        }
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+    return largeMap;}
+
 }
+
