@@ -1,12 +1,19 @@
 package logics;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
+
+import javax.swing.JOptionPane;
 
 import repository.ItemRepository;
 
 public class MapLogic {
     private static final int MAP_SIZE = 100;
     private static final Random RANDOM = new Random();
+    private static List<Monster> monsters = new ArrayList<>();
+    private static List<Chests> chests = new ArrayList<>();
+    private static int monsterLevel = 1; 
 
     public static String[][] generateInitialMap() {
         String[][] mapData = new String[MAP_SIZE][MAP_SIZE];
@@ -26,8 +33,9 @@ public class MapLogic {
         return mapData;
     }
 
+
     public static String generateTileData(String[][] mapData, int x, int y) {
-        String specialTile = generateSpecialTile(10, 5); // 10% for chest, 5% for monster
+        String specialTile = generateSpecialTile(x, y, 2, 10); // 2% for chest, 10% for monster
         if (specialTile != null) {
             TileType newTile = getRandomMatchingTile(mapData, x, y);
             String coordX = String.format("%03d", x);
@@ -131,14 +139,71 @@ public class MapLogic {
 
     }
 
-    private static String generateSpecialTile(int chestProbability, int monsterProbability) {
+    private static String generateSpecialTile(int x, int y, int chestProbability, int monsterProbability) {
         int chance = RANDOM.nextInt(100);
-        if (chance < chestProbability) {
-            return "07"; //CHEST
+        
+        if (chance < chestProbability) {       
+            generateNewChest(x, y);
+            return "07";
         } else if (chance < chestProbability + monsterProbability) {
-            return "01"; //MONSTER
+            generateNewMonster(x, y);
+            String monsterTypeCode=getMonsterAt(x, y).getType();
+            return monsterTypeCode;
         }
         return null; // No special tile
     }
+     private static void generateNewMonster(int x, int y) {
+        int health = 10 + monsterLevel * 5;
+        int attack = 5 + monsterLevel * 2;
+        int agility = (int) Math.round(1 + monsterLevel * 0.02);
+        int goldDrop = 10 + monsterLevel * 3;
+        int randomNum = RANDOM.nextInt(5) + 1;
+        String monsterType =String.format("%02d", randomNum);
+       
+
+        Monster newMonster = new Monster(monsterType,health,attack,agility,goldDrop,x,y,true);
+        monsters.add(newMonster);
+
+        monsterLevel++;
+    }
+    private static void generateNewChest(int x, int y) {
+        int goldDrop = 10 + monsterLevel * 2;     
+        Chests newChests = new Chests(goldDrop,x,y,true);
+        chests.add(newChests);
+    }
+
+    public static List<Monster> getMonsters() {
+        return monsters;
+    }
+    public static Monster getMonsterAt(int x, int y) {
+        for (Monster monster : monsters) {
+            if (monster.getX() == x && monster.getY() == y) {
+                return monster;
+            }
+        }
+        return null;
+    }
+    public static Chests getChestAt(int x, int y) {
+        for (Chests chest : chests) {
+            if (chest.getX() == x && chest.getY() == y) {
+                return chest;
+            }
+        }
+        return null;
+    }
+
+    public void clearMonsters() {
+        monsters.clear();
+        monsterLevel = 1;
+    }
+
+    // Method to clear chests list
+    public void clearChests() {
+        chests.clear();
+    }
+
     
+
+    
+
 }

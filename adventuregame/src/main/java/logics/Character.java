@@ -45,4 +45,5 @@ public class Character {
     public void removeItem(Item item) {
         this.inventory.remove(item);
     }
+    
 }

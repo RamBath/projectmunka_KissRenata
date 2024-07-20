@@ -15,6 +15,7 @@ import java.io.IOException;
 public class GameUI {
     private JFrame frame;
     private GameLogic gameLogic;
+    private MapLogic mapLogic;
     private JTextArea itemDescription;
     private JList<Item> inventoryList;
     private JPanel entryPanel;
@@ -28,8 +29,10 @@ public class GameUI {
 
     public GameUI() {
         gameLogic = new GameLogic();
+        mapLogic =new  MapLogic();
         initialize();
     }
+    
 
     private void initialize() {
         frame = new JFrame();
@@ -59,7 +62,7 @@ public class GameUI {
         // Main panel setup
         mainPanel = new JPanel();
         frame.getContentPane().add(mainPanel, "MainPanel");
-        mainPanel.setLayout(new GridLayout(4, 1, 0, 0));
+        mainPanel.setLayout(new GridLayout(5, 1, 0, 0));
 
         JButton shopButton = new JButton("Shop");
         shopButton.addActionListener(new ActionListener() {
@@ -85,6 +88,14 @@ public class GameUI {
         });
         mainPanel.add(mapButton);
 
+        JButton infoButton = new JButton("Info");
+        infoButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                showInfoScreen();
+            }
+        });
+        mainPanel.add(infoButton);
+
         // Shop panel setup
         shopPanel = new JPanel();
         frame.getContentPane().add(shopPanel, "ShopPanel");
@@ -106,7 +117,7 @@ public class GameUI {
         JButton nextButton = new JButton("Next Item");
         buyButtonPanel.add(nextButton);
 
-        JButton previousButton = new JButton("Previous Item");
+        JButton previousButton = new JButton("Prev. Item");
         buyButtonPanel.add(previousButton);
 
         JButton backToMainButton = new JButton("Main");
@@ -156,7 +167,7 @@ public class GameUI {
         });
         sellButtonPanel.add(nextSellItemButton);
 
-        JButton previousSellItemButton = new JButton("Previous Item");
+        JButton previousSellItemButton = new JButton("Prev. Item");
         previousSellItemButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (gameLogic.getCharacter().getInventory().size() > 0) {
@@ -245,6 +256,7 @@ public class GameUI {
             public void actionPerformed(ActionEvent e) {
                 showMainScreen();
             }
+            
         });
 
         mapControlPanel.add(infoPanel, BorderLayout.NORTH);
@@ -252,9 +264,12 @@ public class GameUI {
 
         mapPanel.add(mapControlPanel, BorderLayout.SOUTH);
 
-        mapScreen = new Map(mapPanel, infoPanel, homeButton);
+        mapScreen = new Map(mapPanel, infoPanel, homeButton, gameLogic, this);
 
         frame.setVisible(true);
+
+
+        
     }
 
     void showMainScreen() {
@@ -275,6 +290,53 @@ public class GameUI {
         frame.revalidate();
         frame.repaint();
     }
+    private void showInfoScreen() {
+        final JDialog infoDialog = new JDialog(frame, "Character Information", true);
+        infoDialog.setSize(300, 400);
+        infoDialog.setLocationRelativeTo(frame);
+        
+        JTextArea infoTextArea = new JTextArea();
+        infoTextArea.setEditable(false);
+        
+        // Collect character information and stats
+        StringBuilder info = new StringBuilder();
+        info.append("Character Attributes:\n");
+        info.append("Health: ").append(gameLogic.getCharacter().getHealth()).append("\n");
+        info.append("Attack: ").append(gameLogic.getCharacter().getAttack()).append("\n");
+        info.append("Defense: ").append(gameLogic.getCharacter().getDefense()).append("\n");
+        info.append("Agility: ").append(gameLogic.getCharacter().getAgility()).append("\n");
+        info.append("Level: ").append(gameLogic.getCharacter().getLevel()).append("\n");
+        info.append("Gold: ").append(gameLogic.getCharacter().getGold()).append("\n\n");
+        
+        info.append("Stats:\n");
+        //info.append("Monsters Killed: ").append(gameLogic.getMonstersKilled()).append("\n");
+        //info.append("Steps Taken: ").append(gameLogic.getStepsTaken()).append("\n");
+        //info.append("Chests Opened: ").append(gameLogic.getChestsOpened()).append("\n\n");
+        
+        info.append("Inventory:\n");
+        for (Item item : gameLogic.getCharacter().getInventory()) {
+            info.append(item.getName()).append("\n");
+        }
+        
+        infoTextArea.setText(info.toString());
+    
+        // Create a panel to hold the text area and the back button
+        JPanel infoPanel = new JPanel(new BorderLayout());
+        infoPanel.add(new JScrollPane(infoTextArea), BorderLayout.CENTER);
+    
+        JButton backButton = new JButton("Back");
+        backButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                infoDialog.dispose();  // Close the dialog
+            }
+        });
+        infoPanel.add(backButton, BorderLayout.SOUTH);
+    
+        infoDialog.add(infoPanel);
+        infoDialog.setVisible(true);
+    }
+    
+    
 
     public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
@@ -320,6 +382,33 @@ public class GameUI {
         e.printStackTrace();
     }
     return largeMap;}
+    
+    
+
+    public void gameOver() {
+        // Show Game Over message
+        JOptionPane.showMessageDialog(null, "Game Over!");
+    
+        // Reset game logic and data
+        mapLogic.clearMonsters();
+        mapLogic.clearChests();
+        gameLogic = new GameLogic();
+    
+        // Reset the map
+        mapScreen.resetMap();
+    
+        // Switch to entry screen
+        showEntryScreen();
+    }
+    
+    private void showEntryScreen() {
+        cardLayout.show(frame.getContentPane(), "EntryPanel");
+    }
+
+    
+    
 
 }
+
+
 

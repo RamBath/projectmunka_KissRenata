@@ -1,13 +1,17 @@
 package ui;
 
 import logics.ActionType;
+import logics.Chests;
+import logics.GameLogic;
 import logics.MapLogic;
+import logics.Monster;
 import logics.TileType;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.Random;
 
 public class Map {
     private static final int TILE_SIZE = 70;
@@ -19,10 +23,11 @@ public class Map {
     private Tile[][] tiles;
     private String[][] mapDataFull;
     private String[][] mapData;
-    private int playerX, playerY;
-    
+    private int playerX, playerY;  
+    private GameLogic gameLogic;
+    private GameUI gameUI;
 
-    public Map(JPanel parentPanel, JTextArea infoPanel, JButton homeButton) {
+    public Map(JPanel parentPanel, JTextArea infoPanel, JButton homeButton, GameLogic gameLogic, GameUI gameUI) {
         this.mapContainer = new JPanel(new GridLayout(MAP_SIZE, MAP_SIZE,0, 0));
         this.infoPanel = infoPanel;
         this.homeButton=homeButton;
@@ -30,6 +35,8 @@ public class Map {
         this.playerX = 50;
         this.playerY = 50;
         this.mapDataFull = MapLogic.generateInitialMap();
+        this.gameLogic=gameLogic;
+        this.gameUI=gameUI;
         fullMapToSubMap();
 
         //parentPanel.add(infoPanel, BorderLayout.SOUTH);
@@ -107,6 +114,7 @@ public class Map {
                 generateSurroundingTiles(playerX, playerY);
                 fullMapToSubMap();
                 updateMapDisplay(mapData, playerX, playerY);
+                checkForEncounters(mapDataFull,playerX, playerY);
             } else  {infoPanel.setText("Out of boundaries!");}
         } 
         else{
@@ -158,7 +166,7 @@ public class Map {
                         tiles[i][j].setBaseImage("/images/" + tileType.getImage());
 
                         if (!actionCode.equals("00")) {
-                            tiles[i][j].setOverlayImage("/images/" +actionType.getImage()); //put player
+                            tiles[i][j].setOverlayImage("/images/" +actionType.getImage()); 
                         }
                         if (i==2 &&j==2){
                             tiles[i][j].setOverlayImage("/images/player.png" ); //put player
@@ -183,5 +191,132 @@ public class Map {
     public void loadMap() {
         // this.mapDataFull;
     }
+    private void checkForEncounters(String[][] mapDataFull, int playerX,int playerY) {
+        Monster monster = MapLogic.getMonsterAt(playerX, playerY);
+        Chests chest = MapLogic.getChestAt(playerX, playerY);
+        if (monster != null) {
+            handleMonsterEncounter(monster);
+            if (!monster.getIsAlive()){
+                System.out.println(mapDataFull[playerX][playerY]);
+                String newString= mapDataFull[playerX][playerY].substring(0, 8) +"06";
+                mapDataFull[playerX][playerY]=newString;
+                System.out.println(mapDataFull[playerX][playerY]);
+            }
+        } else if (chest != null){
+            handleChestEncounter(chest);
+            System.out.println(mapDataFull[playerX][playerY]);
+            String newString= mapDataFull[playerX][playerY].substring(0, 8) +"08";
+            mapDataFull[playerX][playerY]=newString;
+            System.out.println(mapDataFull[playerX][playerY]);
+        }
+    }
+    private void handleMonsterEncounter(Monster monster) {
+        // Display initial encounter message
+        if (monster.getIsAlive()){
+        JOptionPane.showMessageDialog(null, "Encountered a monster with " + monster.getHealth() + " health!");
+    
+        // Combat loop
+        while (true) {
+            // Show options: Fight or Flee
+            String[] options = {"Fight", "Flee"};
+            int choice = JOptionPane.showOptionDialog(null, "What do you want to do?", "Monster Encounter",
+                    JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
+    
+            if (choice == 0) { // Player chooses to fight
+                // Player attacks
+                if (getEvadedAttack(monster.getAgility())){
+                    JOptionPane.showMessageDialog(null,"The monster evaded the attack!");
+                } else{
+                int playerDamage = gameLogic.getCharacter().getAttack();
+                monster.setHealth(monster.getHealth() - playerDamage);
+                JOptionPane.showMessageDialog(null, "You attacked the monster and dealt " + playerDamage + " damage. Monster's health: " + monster.getHealth());
+                }
+                // Check if the monster is defeated
+                if (monster.getHealth() <= 0) {
+                    JOptionPane.showMessageDialog(null, "You have defeated the monster! You got " + monster.getGoldDrop() + " gold!");
+                    monster.setIsAlive(false); 
+                    gameLogic.addMonsterKill(); // Update stats
+                    monster.setType("06"); //thumbstone
+                    gameLogic.getCharacter().setGold(gameLogic.getCharacter().getGold()+monster.getGoldDrop());
+                    return;
+                }
+    
+                // Monster attacks
+                int monsterDamage = monster.getAttack();
+                if (getEvadedAttack(gameLogic.getCharacter().getAgility())){
+                    JOptionPane.showMessageDialog(null,"You evaded the attack!");
+                } else
+                {
+                    gameLogic.getCharacter().setHealth(gameLogic.getCharacter().getHealth() - (monsterDamage-gameLogic.getCharacter().getDefense()));
+                    JOptionPane.showMessageDialog(null, "The monster attacked you and dealt " +(monsterDamage-gameLogic.getCharacter().getDefense()) + " damage. Your health: " + gameLogic.getCharacter().getHealth());
+                }
+
+                // Check if the player is defeated
+                if (gameLogic.getCharacter().getHealth() <= 0) {
+                    JOptionPane.showMessageDialog(null, "You have been defeated by the monster...");
+                    itsGameOver();
+                    return;
+                }
+            } else { // Player chooses to flee
+                JOptionPane.showMessageDialog(null, "You fled from the monster!");
+                return;
+            }
+        }
+    }
+
+    
+    }
+    private Boolean getEvadedAttack(int agility){
+        Boolean Evaded=false;
+        Random rand = new Random();
+        int evadeInt=rand.nextInt(100) + 1;
+        if (evadeInt<=agility) {Evaded=true;}
+        return Evaded;
+    }
+    
+    public void handleChestEncounter(Chests chest) {
+        // Implement the logic for handling a monster encounter
+        // e.g., combat mechanics, updating player and monster stats, etc.
+        if (chest.isActive()){
+            JOptionPane.showMessageDialog(null, "Found a chest with " + chest.getGoldDrop() + " gold!");
+            gameLogic.findChest(chest.getGoldDrop());
+            chest.setActive(false);
+        }
+
+    } 
+
+
+    public void setGameUI(GameUI gameUI) {
+        this.gameUI = gameUI;
+    }
+
+    public void itsGameOver() {
+        if (gameUI != null) {
+            gameUI.gameOver();
+        }
+    }
+
+    public void resetMap() {
+        for (int i = 0; i < MAP_SIZE; i++) {
+            for (int j = 0; j < MAP_SIZE; j++) {
+                this.mapData[i][j] = null;                
+            }
+        }
+        for (int i = 0; i < MAP_SIZE_FULL; i++) {
+            for (int j = 0; j < MAP_SIZE_FULL; j++) {
+                this.mapDataFull[i][j] = null;                
+            }
+        }
+        this.playerX = 50;
+        this.playerY = 50;
+        this.mapDataFull = MapLogic.generateInitialMap();
+        fullMapToSubMap();
+        updateMapDisplay(mapData, playerX, playerY);
+    }
+
+    
+    
+    
+    
 
 }

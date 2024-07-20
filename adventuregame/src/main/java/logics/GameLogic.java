@@ -1,13 +1,19 @@
 package logics;
+import java.util.ArrayList;
+import java.util.List;
+
 import repository.ItemRepository;
 
 public class GameLogic {
     private Character character;
     private ItemRepository itemRepository;
+    private int monstersKilled;
+    
 
     public GameLogic() {
         this.character = new Character();
         this.itemRepository = new ItemRepository();
+        this.monstersKilled = 0;
     }
 
     public Character getCharacter() {
@@ -63,4 +69,17 @@ public class GameLogic {
             }
         }
     }
+
+    public void findChest(int gold){
+        character.setGold(character.getGold() + gold);
+    }
+
+
+    public void addMonsterKill() {
+        monstersKilled++;
+    }
+
+    
+
+    
 }
