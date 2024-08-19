@@ -1,0 +1,54 @@
+Játékleírás
+Miről szól ez a játék?
+Ez egy egyszerű 2D RPG. 
+Mozoghatsz a térképen, harcolhatsz szörnyekkel, kincseket találhatsz, és fejlesztheted a karakteredet 
+Ez egy egyszerű játék, magadtól is rájössz :)
+
+Amire szükség van
+Java JDK (8-as vagy újabb verzió)
+egy SQL databázis adventure_game néven
+
+indítás:
+Futtasd az adventuregame.jar fájlt
+
+Hogyan működik a játék
+Mozgás:
+Használd a nyílbillentyűket a karakter mozgatásához:
+Fel; Le; Balra; Jobbra
+
+A megjelenő térkép 5x5-ös, de egy sokkal nagyobb, 100x100-as világ része.
+
+Amit találsz
+Szörnyek: Ha összefutsz valamelyikkel, harcolnod kell vagy menekülnöd kell.
+Ládák: Ezek aranyat tartalmaznak. (mert mást nem programoztam le)
+
+Hogyan épül fel a játék
+Kulcsosztályok
+Térkép: Kezeli a rácsot, a játékos mozgását és az eseményeket.
+Szörny: A szörnyeket ábrázolja olyan statisztikákkal, mint az egészség, a támadás stb.
+Karakter: Ezzel vagy; Kkzeli statisztikákat, tárgyait és egyebeket.
+GameLogic: Szabályozza a játék állapotát, például csatákat, tárgyhasználatot és szintlépéseket.
+
+Enumok
+TileType: Különféle térképlapkákat határoz meg (pl. minden irányba nyíiló, jobbra kanyarodó stb.).
+ActionType: Meghatározza a műveleteket, amelyek ezeken a lapkákon történnek (például egy szörny megtalálása).
+
+Mentés:
+
+Két féle mentésre van lehetőség, egyben txt fileba íródik be automatikusan a térkép, szörnyek és a kincsesládák, amit a játék elején lehet visszaolvasni.
+A másik mentési mód az SQL szerverre backuppolás.
+
+Itt jó tudni: a karaktered nem mentődik le egyik esetbe se; illetve, ha új játékot kezdesz, akkor meglepetés szürnyeket/ládákat tallhatsz a már eddig lementett SQL szerveren;
+Ezek nem fognak megjelenni a térképen.
+ 
+Unit tesztelés:
+
+A test foderben található egy TileTypeTest ami ellenőrzi, hogy a lapkák megfelelően meghívódnak.
+
+Manuális tesztelés:
+Játssz a játékkal
+Mindent fordít: Győződjön meg arról, hogy a projekt teljesen fel van építve.
+Futtatás: Keresse meg a fő metódust a belépési osztályban, és nyomja meg a "Futtatás" gombot.
+Élvezze: A játék ablak felugrik, és elkezdheti játszani.
+
+Jó tudni: az eszközök (itemek) nincsenek leprogramozva, így nem érdemes belőlük venni
