@@ -8,13 +8,15 @@ import logics.Item;
 public class ItemRepository {
     private List<Item> items;
     private int currentItemIndex;
+   
 
     public ItemRepository() {
         items = new ArrayList<>();
         currentItemIndex = 0;
         loadItems();
+        
     }
-
+   
     private void loadItems() {
         items.add(new Item("Sword", "A sharp blade.", 5));
         items.add(new Item("Shield", "Protects against attacks.", 7));

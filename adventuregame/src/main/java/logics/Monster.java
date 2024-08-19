@@ -10,16 +10,19 @@ public class Monster {
     private String monsterTypeCode;
     private boolean isAlive;
 
+    public Monster() {
+    }
 
-    public Monster(String monsterTypeCode,int health, int attack, int agility, int goldDrop, int x, int y, boolean isAlive) {
-        this.monsterTypeCode=monsterTypeCode;
+    public Monster(String monsterTypeCode, int health, int attack, int agility, int goldDrop, int x, int y,
+            boolean isAlive) {
+        this.monsterTypeCode = monsterTypeCode;
         this.health = health;
         this.attack = attack;
         this.agility = agility;
         this.goldDrop = goldDrop;
         this.x = x;
         this.y = y;
-        this.isAlive=isAlive;
+        this.isAlive = isAlive;
     }
 
     // Getters and setters for all fields
@@ -30,6 +33,7 @@ public class Monster {
     public void setType(String monsterTypeCode) {
         this.monsterTypeCode = monsterTypeCode;
     }
+
     public int getHealth() {
         return health;
     }
@@ -77,6 +81,7 @@ public class Monster {
     public void setY(int y) {
         this.y = y;
     }
+
     public boolean getIsAlive() {
         return isAlive;
     }
@@ -84,4 +89,26 @@ public class Monster {
     public void setIsAlive(boolean isAlive) {
         this.isAlive = isAlive;
     }
+
+    @Override
+    public String toString() {
+        return "m " + monsterTypeCode + " " + health + " " + attack + " " + agility + " " + goldDrop
+                + " " + x + " " + y + " " + isAlive;
+    }
+
+    public void setMonsterTypeCode(String monsterTypeCode) {
+        this.monsterTypeCode = monsterTypeCode;
+    }
+
+    public void setAlive(boolean isAlive) {
+        this.isAlive = isAlive;
+    }
+
+    public String getMonsterTypeCode() {
+        return monsterTypeCode;
+    }
+    
+
+    
+
 }

@@ -5,6 +5,8 @@ public class Chests {
     private int x;
     private int y;
     private boolean isActive;
+
+    public Chests(){}
     public Chests(int goldDrop, int x, int y, boolean isActive) {
         this.goldDrop = goldDrop;
         this.x = x;
@@ -35,6 +37,12 @@ public class Chests {
     public void setActive(boolean isActive) {
         this.isActive = isActive;
     }
+    @Override
+    public String toString() {
+
+        return "c "+ goldDrop + " "+ x +" " + y +" " + isActive;
+    }
+    
     
 
 

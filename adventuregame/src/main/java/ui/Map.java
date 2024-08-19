@@ -159,6 +159,7 @@ public class Map {
                 tiles[i][j].clearBaseImage();
                 if (mapData[i][j] != null) {
                     String tileCode = mapData[i][j].substring(6, 8);
+                    System.out.println(mapData[i][j]);
                     String actionCode = mapData[i][j].substring(8, 10);
                     TileType tileType = TileType.getByCode(tileCode);
                     ActionType actionType = ActionType.getByCode(actionCode);
@@ -314,9 +315,32 @@ public class Map {
         updateMapDisplay(mapData, playerX, playerY);
     }
 
-    
-    
-    
-    
+
+
+
+
+
+
+
+    public String[][] getMapDataFull() {
+        return mapDataFull;
+       
+    }
+
+    public String[][] getMapData() {
+        return mapData;
+    }
+
+    public void loadMapDataFull(String[][] mapDataFull) {
+        this.mapDataFull = mapDataFull;
+        this.playerX = 50;
+        this.playerY = 50;
+        fullMapToSubMap();
+        updateMapDisplay(mapData, playerX, playerY);
+    }
+
+    public void setMapData(String[][] mapData) {
+        this.mapData = mapData;
+    }    
 
 }

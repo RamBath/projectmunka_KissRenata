@@ -6,6 +6,7 @@ import java.util.Random;
 
 import javax.swing.JOptionPane;
 
+import repository.GameRepository;
 import repository.ItemRepository;
 
 public class MapLogic {
@@ -14,6 +15,17 @@ public class MapLogic {
     private static List<Monster> monsters = new ArrayList<>();
     private static List<Chests> chests = new ArrayList<>();
     private static int monsterLevel = 1; 
+    private GameRepository gameRepository;
+
+
+    public MapLogic() {
+        this.gameRepository = new GameRepository();
+    }
+
+    public void loadFromDBMonstersAndChests(){
+        monsters=gameRepository.getMonsters();
+        chests=gameRepository.getChests();
+    }
 
     public static String[][] generateInitialMap() {
         String[][] mapData = new String[MAP_SIZE][MAP_SIZE];
@@ -175,6 +187,11 @@ public class MapLogic {
     public static List<Monster> getMonsters() {
         return monsters;
     }
+    public static List<Chests> getChests() {
+        return chests;
+    }
+
+
     public static Monster getMonsterAt(int x, int y) {
         for (Monster monster : monsters) {
             if (monster.getX() == x && monster.getY() == y) {
@@ -192,15 +209,58 @@ public class MapLogic {
         return null;
     }
 
+    public void setMonsterList(String monsterType, String health , String attack, String agility, String goldDrop, String x, String y, String isA){
+        
+        Monster newMonster = new Monster(monsterType,Integer.parseInt(health),Integer.parseInt(attack),Integer.parseInt(agility),Integer.parseInt(goldDrop),Integer.parseInt(x),Integer.parseInt(y),Boolean.parseBoolean(isA));
+        monsters.add(newMonster);
+        monsterLevel++;
+    }
+
+    public void setChestList(String g, String x, String y, String isA){
+        Chests newChest = new Chests(Integer.parseInt(g),Integer.parseInt(x),Integer.parseInt(y), Boolean.parseBoolean(isA));
+        chests.add(newChest);
+    }
+
     public void clearMonsters() {
         monsters.clear();
         monsterLevel = 1;
     }
 
-    // Method to clear chests list
+  
     public void clearChests() {
         chests.clear();
     }
+
+    public String getAllMonsters()
+    {    
+        String monstersAll = new String(); 
+
+        for ( Monster monster : monsters){
+            monstersAll= monstersAll + monster.toString() + "\n";
+        }
+        return  monstersAll;     
+    }
+    public String getAllChests()
+    {    
+        String chestsAll =  new String(); 
+
+        for ( Chests chest : chests){
+            chestsAll= chestsAll + chest.toString() + "\n";
+        }
+        return  chestsAll;     
+    }
+
+    public void refreshMonsters(String[][] mapData){
+
+
+    }
+
+    
+
+
+    
+
+    
 
     
 

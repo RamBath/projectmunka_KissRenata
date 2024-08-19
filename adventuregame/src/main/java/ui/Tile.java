@@ -1,4 +1,5 @@
-package ui;import javax.swing.*;
+package ui;
+import javax.swing.*;
 import java.awt.*;
 
 public class Tile extends JPanel {
